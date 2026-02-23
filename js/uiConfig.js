@@ -1,0 +1,4 @@
+export const CONDITION_TYPES = ["always", "turnMod", "playerInRangeManhattan", "playerInLine", "enemyStateIs"];
+export const ACTION_TYPES = ["setState", "wait", "moveTowardPlayer", "moveRandom", "moveByVector", "telegraph", "attackPlayer", "log"];
+
+export const BEHAVIOR_HELP = `Rule = priority + conditions + actions. Highest priority runs first.\n\nConditions:\n- always\n- turnMod(every, offset)\n- playerInRangeManhattan(range)\n- playerInLine(mode rook|bishop|queen)\n- enemyStateIs(value)\n\nActions:\n- setState(value)\n- wait\n- moveTowardPlayer(movement, steps)\n- moveRandom(steps, allowDiagonal)\n- moveByVector(dx,dy)\n- telegraph(turns, marker)\n- attackPlayer(type, damage)\n- log(message)\n\nExamples:\n1) Rook chaser: if playerInLine rook -> moveTowardPlayer rook 1 else wait\n2) Knight pouncer: turnMod every=2 -> moveTowardPlayer knight 1 else wait\n3) Telegraph cycle: idle->telegraph->attack->cooldown using enemyStateIs + setState.`;

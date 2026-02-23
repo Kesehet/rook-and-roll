@@ -4,272 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rook & Roll Prototype</title>
-    <style>
-      :root {
-        --bg: #12161f;
-        --panel: #1b2230;
-        --panel-2: #242d40;
-        --text: #e8eefc;
-        --muted: #a3b0cc;
-        --accent: #77b6ff;
-        --danger: #ff7088;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-        height: 100%;
-      }
-
-      body {
-        min-height: 100vh;
-        overflow: hidden;
-      }
-
-      .app {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        padding: 12px;
-        gap: 10px;
-      }
-
-      .top-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-      }
-
-      .title {
-        font-weight: 700;
-      }
-
-      .board-stage {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .board {
-        width: min(100%, calc((100vh - 190px) * (var(--cols) / var(--rows))));
-        aspect-ratio: var(--cols) / var(--rows);
-        display: grid;
-        grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-        grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
-        border: 2px solid #0a0e17;
-        border-radius: 10px;
-        overflow: hidden;
-        background: #0f1420;
-      }
-
-      .tile {
-        aspect-ratio: 1 / 1;
-        position: relative;
-        border: 1px solid rgba(0, 0, 0, 0.16);
-        cursor: pointer;
-        user-select: none;
-      }
-
-      .tile.ground {
-        background: #4f9965;
-      }
-
-      .tile.wall {
-        background: #79553d;
-      }
-
-      .tile.blank {
-        background: #6f7380;
-      }
-
-      .enemy {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        font-size: clamp(12px, 1.4vw, 22px);
-        pointer-events: none;
-      }
-
-      .player {
-        position: absolute;
-        inset: 10%;
-        border-radius: 8px;
-        background: radial-gradient(circle at 30% 30%, #fff, #d9e7ff 48%, #91a7cf 100%);
-        border: 2px solid #222;
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25), 0 4px 10px rgba(0, 0, 0, 0.35);
-        color: #0d1430;
-        font-weight: 900;
-        display: grid;
-        place-items: center;
-        font-size: clamp(12px, 1.2vw, 20px);
-        z-index: 2;
-      }
-
-      .preview {
-        background: var(--panel);
-        border: 1px solid #313f58;
-        border-radius: 10px;
-        padding: 10px 12px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 8px;
-      }
-
-      .preview-item {
-        background: var(--panel-2);
-        border-radius: 8px;
-        padding: 8px;
-        text-align: center;
-      }
-
-      .preview-item strong {
-        display: block;
-        font-size: 0.78rem;
-        color: var(--muted);
-      }
-
-      button,
-      input,
-      select,
-      textarea {
-        font: inherit;
-      }
-
-      button {
-        border: none;
-        border-radius: 8px;
-        padding: 8px 12px;
-        color: white;
-        background: #3d5fa8;
-        cursor: pointer;
-      }
-
-      button.secondary {
-        background: #47526b;
-      }
-
-      button.danger {
-        background: #9c2f43;
-      }
-
-      .modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(6, 8, 12, 0.72);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        z-index: 20;
-      }
-
-      .modal.open {
-        display: flex;
-      }
-
-      .modal-panel {
-        width: min(960px, 100%);
-        max-height: 92vh;
-        overflow: auto;
-        border-radius: 12px;
-        background: var(--panel);
-        border: 1px solid #37445f;
-        padding: 14px;
-        display: grid;
-        gap: 12px;
-      }
-
-      .section {
-        border: 1px solid #3a4660;
-        border-radius: 10px;
-        padding: 12px;
-        display: grid;
-        gap: 10px;
-      }
-
-      .row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 8px;
-      }
-
-      .field {
-        display: grid;
-        gap: 6px;
-      }
-
-      .field label {
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-
-      .field input,
-      .field select,
-      .field textarea {
-        border: 1px solid #516180;
-        border-radius: 6px;
-        background: #0f1522;
-        color: var(--text);
-        padding: 7px;
-      }
-
-      .enemy-card {
-        border: 1px solid #48597a;
-        border-radius: 10px;
-        padding: 10px;
-        display: grid;
-        gap: 10px;
-        background: #161d2b;
-      }
-
-      .enemy-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-      }
-
-      .toast {
-        position: fixed;
-        right: 12px;
-        bottom: 12px;
-        background: #1f7a45;
-        color: white;
-        border-radius: 8px;
-        padding: 8px 12px;
-        z-index: 30;
-        opacity: 0;
-        transform: translateY(8px);
-        transition: all 0.2s;
-        pointer-events: none;
-      }
-
-      .toast.show {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .toast.error {
-        background: #a33344;
-      }
-    </style>
+    <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
     <div class="app">
       <header class="top-bar">
         <div class="title">Rook &amp; Roll Prototype</div>
-        <button id="openConfigBtn">Config (C)</button>
+        <div class="top-actions">
+          <div id="turnIndicator" class="turn-indicator">Turn: 0</div>
+          <button id="openConfigBtn">Config (C)</button>
+        </div>
       </header>
 
       <main class="board-stage">
@@ -277,17 +21,24 @@
       </main>
 
       <section id="previewBar" class="preview"></section>
+      <section class="log-panel section">
+        <div class="log-head">
+          <h3>Event Log</h3>
+          <button id="clearLogBtn" class="secondary">Clear</button>
+        </div>
+        <div id="eventLog" class="event-log"></div>
+      </section>
     </div>
 
     <div id="configModal" class="modal" role="dialog" aria-modal="true">
       <div class="modal-panel">
         <div class="enemy-head">
-          <h2 style="margin: 0">Configuration</h2>
+          <h2>Configuration</h2>
           <button class="secondary" id="closeConfigBtn">Close</button>
         </div>
 
         <section class="section">
-          <h3 style="margin: 0">A) Global Settings</h3>
+          <h3>A) Global Settings</h3>
           <div class="row">
             <div class="field">
               <label for="rowsInput">Rows</label>
@@ -298,27 +49,34 @@
               <input id="colsInput" type="number" min="2" step="1" />
             </div>
           </div>
-          <div>
-            <button id="applyBoardBtn">Apply Board Size</button>
-          </div>
+          <button id="applyBoardBtn">Apply Board Size</button>
         </section>
 
         <section class="section">
-          <h3 style="margin: 0">B) Enemies Editor</h3>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <h3>B) Enemies Editor</h3>
+          <div class="toolbar-row">
             <button id="addEnemyBtn">Add Enemy</button>
             <button id="togglePlaceEnemyBtn" class="secondary">Place Enemy Mode: Off</button>
           </div>
-          <div id="enemyList" style="display: grid; gap: 8px"></div>
+          <div id="enemyList" class="stack"></div>
         </section>
 
         <section class="section">
-          <h3 style="margin: 0">Import / Export</h3>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <h3>C) Traps Editor</h3>
+          <div class="toolbar-row">
+            <button id="addTrapBtn">Add Trap</button>
+            <button id="togglePlaceTrapBtn" class="secondary">Place Trap Mode: Off</button>
+          </div>
+          <div id="trapList" class="stack"></div>
+        </section>
+
+        <section class="section">
+          <h3>Import / Export</h3>
+          <div class="toolbar-row">
             <button id="exportBtn">Export JSON</button>
-            <label class="secondary" style="display: inline-flex; align-items: center; gap: 8px; background: #47526b; border-radius: 8px; padding: 8px 12px; cursor: pointer">
+            <label class="button-like secondary">
               Import JSON
-              <input id="importInput" type="file" accept="application/json" style="display: none" />
+              <input id="importInput" type="file" accept="application/json" hidden />
             </label>
           </div>
         </section>
@@ -326,381 +84,6 @@
     </div>
 
     <div id="toast" class="toast"></div>
-
-    <script>
-      const TILE_TYPES = ["ground", "wall", "blank"];
-      const DEFAULT_DICE = { top: 1, bottom: 6, left: 4, right: 3, front: 2, back: 5 };
-      const ENEMY_TYPES = ["rook", "bishop", "knight", "queen", "king", "pawn", "custom"];
-
-      // Source of truth for game + editor state.
-      let state = createDefaultState(16, 10);
-      const ui = {
-        isConfigOpen: false,
-        placeEnemyMode: false,
-        selectedEnemyId: null
-      };
-
-      const els = {
-        board: document.getElementById("board"),
-        previewBar: document.getElementById("previewBar"),
-        configModal: document.getElementById("configModal"),
-        openConfigBtn: document.getElementById("openConfigBtn"),
-        closeConfigBtn: document.getElementById("closeConfigBtn"),
-        rowsInput: document.getElementById("rowsInput"),
-        colsInput: document.getElementById("colsInput"),
-        applyBoardBtn: document.getElementById("applyBoardBtn"),
-        addEnemyBtn: document.getElementById("addEnemyBtn"),
-        togglePlaceEnemyBtn: document.getElementById("togglePlaceEnemyBtn"),
-        enemyList: document.getElementById("enemyList"),
-        exportBtn: document.getElementById("exportBtn"),
-        importInput: document.getElementById("importInput"),
-        toast: document.getElementById("toast")
-      };
-
-      function createDefaultState(rows, cols) {
-        const tiles = Array.from({ length: rows }, () => Array.from({ length: cols }, () => "ground"));
-        return {
-          config: { rows, cols },
-          tiles,
-          player: {
-            x: Math.floor(cols / 2),
-            y: Math.floor(rows / 2),
-            dice: { ...DEFAULT_DICE }
-          },
-          enemies: []
-        };
-      }
-
-      function rollDice(dice, direction) {
-        const d = { ...dice };
-        if (direction === "left") return { ...d, top: d.right, right: d.bottom, bottom: d.left, left: d.top };
-        if (direction === "right") return { ...d, top: d.left, left: d.bottom, bottom: d.right, right: d.top };
-        if (direction === "up") return { ...d, top: d.front, front: d.bottom, bottom: d.back, back: d.top };
-        if (direction === "down") return { ...d, top: d.back, back: d.bottom, bottom: d.front, front: d.top };
-        return d;
-      }
-
-      function canMoveTo(x, y) {
-        if (x < 0 || y < 0 || y >= state.config.rows || x >= state.config.cols) return false;
-        return state.tiles[y][x] === "ground";
-      }
-
-      function exportConfig() {
-        const payload = JSON.stringify(state, null, 2);
-        const blob = new Blob([payload], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const stamp = new Date().toISOString().replace(/:/g, "-").replace("T", "_").slice(0, 19);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `config_${stamp}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-
-      function importConfig(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const parsed = JSON.parse(String(reader.result));
-            validateImportedState(parsed);
-            state = parsed;
-            ui.selectedEnemyId = state.enemies[0]?.id ?? null;
-            showToast("Import successful");
-            renderAll();
-          } catch (err) {
-            showToast(`Import error: ${err.message}`, true);
-          }
-        };
-        reader.readAsText(file);
-      }
-
-      function validateImportedState(data) {
-        if (!data || typeof data !== "object") throw new Error("Invalid root object");
-        if (!data.config || typeof data.config.rows !== "number" || typeof data.config.cols !== "number") {
-          throw new Error("Invalid config");
-        }
-        if (!Array.isArray(data.tiles) || data.tiles.length !== data.config.rows) throw new Error("Invalid tiles rows");
-        data.tiles.forEach((row) => {
-          if (!Array.isArray(row) || row.length !== data.config.cols) throw new Error("Invalid tiles cols");
-          row.forEach((tile) => {
-            if (!TILE_TYPES.includes(tile)) throw new Error("Unknown tile type");
-          });
-        });
-        if (!data.player || typeof data.player.x !== "number" || typeof data.player.y !== "number") {
-          throw new Error("Invalid player");
-        }
-        const dice = data.player.dice;
-        ["top", "bottom", "left", "right", "front", "back"].forEach((k) => {
-          if (typeof dice?.[k] !== "number") throw new Error("Invalid dice orientation");
-        });
-        if (!Array.isArray(data.enemies)) throw new Error("Invalid enemies");
-      }
-
-      function showToast(message, isError = false) {
-        els.toast.textContent = message;
-        els.toast.classList.toggle("error", isError);
-        els.toast.classList.add("show");
-        clearTimeout(showToast.timer);
-        showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2200);
-      }
-
-      function renderBoard() {
-        const { rows, cols } = state.config;
-        els.board.style.setProperty("--rows", rows);
-        els.board.style.setProperty("--cols", cols);
-        const frag = document.createDocumentFragment();
-
-        for (let y = 0; y < rows; y++) {
-          for (let x = 0; x < cols; x++) {
-            const tile = document.createElement("div");
-            tile.className = `tile ${state.tiles[y][x]}`;
-            tile.dataset.x = String(x);
-            tile.dataset.y = String(y);
-
-            const enemy = state.enemies.find((e) => e.x === x && e.y === y);
-            if (enemy) {
-              const enemyNode = document.createElement("div");
-              enemyNode.className = "enemy";
-              enemyNode.textContent = enemy.icon || "👾";
-              tile.appendChild(enemyNode);
-            }
-
-            if (state.player.x === x && state.player.y === y) {
-              const player = document.createElement("div");
-              player.className = "player";
-              player.textContent = String(state.player.dice.top);
-              tile.appendChild(player);
-            }
-
-            frag.appendChild(tile);
-          }
-        }
-
-        els.board.replaceChildren(frag);
-      }
-
-      function renderPreviewBar() {
-        const d = state.player.dice;
-        const entries = [
-          ["Current Top", d.top],
-          ["Up", rollDice(d, "up").top],
-          ["Down", rollDice(d, "down").top],
-          ["Left", rollDice(d, "left").top],
-          ["Right", rollDice(d, "right").top]
-        ];
-
-        els.previewBar.innerHTML = entries
-          .map(([label, value]) => `<div class="preview-item"><strong>${label}</strong><div>${value}</div></div>`)
-          .join("");
-      }
-
-      function renderEnemyEditor() {
-        els.enemyList.innerHTML = "";
-        state.enemies.forEach((enemy) => {
-          const card = document.createElement("div");
-          card.className = "enemy-card";
-          card.innerHTML = `
-            <div class="enemy-head">
-              <strong>${enemy.icon || "👾"} ${enemy.id}</strong>
-              <button class="danger" data-remove-id="${enemy.id}">Remove</button>
-            </div>
-            <div class="row">
-              <div class="field"><label>Type</label><select data-field="type">${ENEMY_TYPES.map((t) => `<option value="${t}" ${t === enemy.type ? "selected" : ""}>${t}</option>`).join("")}</select></div>
-              <div class="field"><label>Icon</label><input data-field="icon" value="${escapeHtml(enemy.icon)}" /></div>
-              <div class="field"><label>X</label><input data-field="x" type="number" value="${enemy.x}" /></div>
-              <div class="field"><label>Y</label><input data-field="y" type="number" value="${enemy.y}" /></div>
-            </div>
-            <div class="row">
-              <div class="field"><label>Movement</label><select data-field="movementMode"><option value="jump" ${enemy.movementMode === "jump" ? "selected" : ""}>jump</option><option value="step" ${enemy.movementMode === "step" ? "selected" : ""}>step</option></select></div>
-              <div class="field"><label>Blocked by Walls</label><select data-field="blockedByWalls"><option value="true" ${enemy.blockedByWalls ? "selected" : ""}>true</option><option value="false" ${!enemy.blockedByWalls ? "selected" : ""}>false</option></select></div>
-              <div class="field"><label>Can Pass Obstacles</label><select data-field="canPassObstacles"><option value="true" ${enemy.canPassObstacles ? "selected" : ""}>true</option><option value="false" ${!enemy.canPassObstacles ? "selected" : ""}>false</option></select></div>
-            </div>
-            <div class="field"><label>Notes</label><textarea data-field="notes">${escapeHtml(enemy.notes)}</textarea></div>
-            <div><button class="secondary" data-select-id="${enemy.id}">${ui.selectedEnemyId === enemy.id ? "Selected for placement" : "Select for placement"}</button></div>
-          `;
-
-          card.querySelector("[data-remove-id]").addEventListener("click", () => {
-            state.enemies = state.enemies.filter((e) => e.id !== enemy.id);
-            if (ui.selectedEnemyId === enemy.id) ui.selectedEnemyId = state.enemies[0]?.id ?? null;
-            renderAll();
-          });
-
-          card.querySelector("[data-select-id]").addEventListener("click", () => {
-            ui.selectedEnemyId = enemy.id;
-            renderUI();
-          });
-
-          card.querySelectorAll("[data-field]").forEach((input) => {
-            input.addEventListener("input", () => {
-              const key = input.dataset.field;
-              let value = input.value;
-              if (["x", "y"].includes(key)) value = Number(value);
-              if (["blockedByWalls", "canPassObstacles"].includes(key)) value = value === "true";
-              enemy[key] = value;
-              renderBoard();
-            });
-          });
-
-          els.enemyList.appendChild(card);
-        });
-      }
-
-      function renderUI() {
-        els.rowsInput.value = String(state.config.rows);
-        els.colsInput.value = String(state.config.cols);
-        els.togglePlaceEnemyBtn.textContent = `Place Enemy Mode: ${ui.placeEnemyMode ? "On" : "Off"}`;
-        renderEnemyEditor();
-      }
-
-      function renderAll() {
-        renderBoard();
-        renderPreviewBar();
-        renderUI();
-      }
-
-      function attemptMove(direction) {
-        const delta = {
-          left: [-1, 0],
-          right: [1, 0],
-          up: [0, -1],
-          down: [0, 1]
-        }[direction];
-        if (!delta) return;
-
-        const nx = state.player.x + delta[0];
-        const ny = state.player.y + delta[1];
-        if (!canMoveTo(nx, ny)) return;
-
-        state.player.x = nx;
-        state.player.y = ny;
-        state.player.dice = rollDice(state.player.dice, direction);
-        renderBoard();
-        renderPreviewBar();
-      }
-
-      function cycleTile(x, y) {
-        const current = state.tiles[y][x];
-        const next = TILE_TYPES[(TILE_TYPES.indexOf(current) + 1) % TILE_TYPES.length];
-        state.tiles[y][x] = next;
-
-        // Keep player legal when tiles change under them.
-        if (!canMoveTo(state.player.x, state.player.y)) {
-          state.player.x = Math.floor(state.config.cols / 2);
-          state.player.y = Math.floor(state.config.rows / 2);
-        }
-        renderBoard();
-      }
-
-      function applyBoardSize() {
-        const rows = Math.max(2, Number(els.rowsInput.value) || 2);
-        const cols = Math.max(2, Number(els.colsInput.value) || 2);
-        const next = createDefaultState(rows, cols);
-        next.enemies = state.enemies.map((e) => ({
-          ...e,
-          x: Math.min(cols - 1, Math.max(0, e.x)),
-          y: Math.min(rows - 1, Math.max(0, e.y))
-        }));
-        state = next;
-        renderAll();
-      }
-
-      function addEnemy() {
-        const id = `enemy-${Math.random().toString(36).slice(2, 8)}`;
-        const enemy = {
-          id,
-          type: "rook",
-          icon: "♜",
-          x: 0,
-          y: 0,
-          movementMode: "step",
-          blockedByWalls: true,
-          canPassObstacles: false,
-          notes: ""
-        };
-        state.enemies.push(enemy);
-        ui.selectedEnemyId = id;
-        renderAll();
-      }
-
-      function setConfigOpen(open) {
-        ui.isConfigOpen = open;
-        els.configModal.classList.toggle("open", open);
-      }
-
-      function escapeHtml(v) {
-        return String(v)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      // Input wiring is separated from render/state for easier expansion.
-      function bindEvents() {
-        els.board.addEventListener("click", (event) => {
-          const tileEl = event.target.closest(".tile");
-          if (!tileEl) return;
-          const x = Number(tileEl.dataset.x);
-          const y = Number(tileEl.dataset.y);
-
-          if (ui.placeEnemyMode && ui.selectedEnemyId) {
-            const enemy = state.enemies.find((e) => e.id === ui.selectedEnemyId);
-            if (enemy) {
-              enemy.x = x;
-              enemy.y = y;
-              renderAll();
-            }
-            return;
-          }
-
-          cycleTile(x, y);
-        });
-
-        window.addEventListener("keydown", (event) => {
-          if (event.key.toLowerCase() === "c") {
-            setConfigOpen(!ui.isConfigOpen);
-            return;
-          }
-          if (ui.isConfigOpen) return;
-
-          const map = {
-            ArrowLeft: "left",
-            ArrowRight: "right",
-            ArrowUp: "up",
-            ArrowDown: "down",
-            a: "left",
-            d: "right",
-            w: "up",
-            s: "down"
-          };
-          const direction = map[event.key] || map[event.key.toLowerCase()];
-          if (!direction) return;
-          event.preventDefault();
-          attemptMove(direction);
-        });
-
-        window.addEventListener("resize", renderBoard);
-
-        els.openConfigBtn.addEventListener("click", () => setConfigOpen(true));
-        els.closeConfigBtn.addEventListener("click", () => setConfigOpen(false));
-        els.configModal.addEventListener("click", (e) => {
-          if (e.target === els.configModal) setConfigOpen(false);
-        });
-
-        els.applyBoardBtn.addEventListener("click", applyBoardSize);
-        els.addEnemyBtn.addEventListener("click", addEnemy);
-        els.togglePlaceEnemyBtn.addEventListener("click", () => {
-          ui.placeEnemyMode = !ui.placeEnemyMode;
-          renderUI();
-        });
-        els.exportBtn.addEventListener("click", exportConfig);
-        els.importInput.addEventListener("change", (e) => importConfig(e.target.files?.[0]));
-      }
-
-      bindEvents();
-      renderAll();
-    </script>
+    <script type="module" src="./js/main.js"></script>
   </body>
 </html>
